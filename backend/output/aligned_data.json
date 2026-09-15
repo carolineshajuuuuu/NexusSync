@@ -1,0 +1,38 @@
+{
+  "session_id": "demo_001",
+  "segments": [
+    {
+      "start": "00:00",
+      "end": "00:10",
+      "heart_rate": 76.0,
+      "events": [
+        "baseline",
+        "attentive"
+      ]
+    },
+    {
+      "start": "00:10",
+      "end": "00:20",
+      "heart_rate": 81.0,
+      "events": [
+        "attention_shift"
+      ]
+    },
+    {
+      "start": "00:20",
+      "end": "00:30",
+      "heart_rate": 86.0,
+      "events": [
+        "engaged"
+      ]
+    },
+    {
+      "start": "00:30",
+      "end": "00:40",
+      "heart_rate": 83.0,
+      "events": [
+        "relaxed"
+      ]
+    }
+  ]
+}
