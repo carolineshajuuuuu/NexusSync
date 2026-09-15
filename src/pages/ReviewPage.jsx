@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { LABELS, LABEL_KEYS } from '../lib/labels'
 import { formatTime } from '../lib/format'
@@ -13,7 +13,8 @@ function formatClick(click) {
 }
 
 export default function ReviewPage() {
-  const { sessionName, durationSeconds, segments } = sessionData
+  const location = useLocation()
+  const { sessionName, durationSeconds, segments } = location.state?.session || sessionData
 
   const [selectedId, setSelectedId] = useState(() => {
     const defaultSeg = segments.find(s => s.id === 4)
