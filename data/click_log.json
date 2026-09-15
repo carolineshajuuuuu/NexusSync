@@ -1,0 +1,8 @@
+[
+  { "timestamp": "00:00", "event": "baseline" },
+  { "timestamp": "00:06", "event": "attentive" },
+  { "timestamp": "00:12", "event": "attention_shift" },
+  { "timestamp": "00:26", "event": "engaged" },
+  { "timestamp": "00:34", "event": "relaxed" },
+  { "timestamp": "00:40", "event": "positive_engagement" }
+]
