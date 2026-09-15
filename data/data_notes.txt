@@ -1,0 +1,4 @@
+heart_rate.csv contains SIMULATED/SYNTHETIC data.
+No physiological sensor was used. Values were manually 
+estimated based on observed behavioral cues in video.mp4, 
+for hackathon demo purposes only.
