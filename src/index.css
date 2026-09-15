@@ -423,6 +423,17 @@ p {
   cursor: pointer;
 }
 
+.home__error {
+  margin: 14px 0 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--clay-deep);
+  background: var(--clay-tint);
+  border: 1px solid var(--clay);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
 /* Processing overlay */
 .processing-overlay {
   position: fixed;
