@@ -1,0 +1,168 @@
+{
+  "sessionName": "Physics Simulation · Cohort A",
+  "durationSeconds": 180,
+  "segments": [
+    {
+      "id": 1,
+      "startTime": 0,
+      "endTime": 10,
+      "label": "engaged",
+      "justification": "Opened the task and began reading instructions immediately.",
+      "heartRate": 78,
+      "clickEvent": "opened-task"
+    },
+    {
+      "id": 2,
+      "startTime": 10,
+      "endTime": 20,
+      "label": "engaged",
+      "justification": "Steady gaze on the simulation, no interruptions, responsive posture.",
+      "heartRate": 77,
+      "clickEvent": null
+    },
+    {
+      "id": 3,
+      "startTime": 20,
+      "endTime": 30,
+      "label": "confused",
+      "justification": "Paused and scrolled to the support panel after the slope changed.",
+      "heartRate": 83,
+      "clickEvent": "scrolled-to-help"
+    },
+    {
+      "id": 4,
+      "startTime": 30,
+      "endTime": 40,
+      "label": "frustrated",
+      "justification": "Repeated error code, rapid retries, tense micro-expressions.",
+      "heartRate": 91,
+      "clickEvent": "error-code-42"
+    },
+    {
+      "id": 5,
+      "startTime": 40,
+      "endTime": 50,
+      "label": "engaged",
+      "justification": "Recovered after feedback, resumed deliberate adjusting of inputs.",
+      "heartRate": 80,
+      "clickEvent": "retried-question"
+    },
+    {
+      "id": 6,
+      "startTime": 50,
+      "endTime": 55,
+      "label": "bored",
+      "justification": "Brief tab switch and gaze wandering during the loading sequence.",
+      "heartRate": 72,
+      "clickEvent": "switched-tab"
+    },
+    {
+      "id": 7,
+      "startTime": 55,
+      "endTime": 65,
+      "label": "engaged",
+      "justification": "Typed a full response, focused head down on the keyboard.",
+      "heartRate": 79,
+      "clickEvent": "typed-response"
+    },
+    {
+      "id": 8,
+      "startTime": 65,
+      "endTime": 75,
+      "label": "engaged",
+      "justification": "Watching the graph animate, occasional nodding, stable heart rate.",
+      "heartRate": 81,
+      "clickEvent": null
+    },
+    {
+      "id": 9,
+      "startTime": 75,
+      "endTime": 85,
+      "label": "confused",
+      "justification": "Hovered over the glossary term twice before proceeding.",
+      "heartRate": 84,
+      "clickEvent": "hovered-glossary"
+    },
+    {
+      "id": 10,
+      "startTime": 85,
+      "endTime": 95,
+      "label": "engaged",
+      "justification": "Submitted an answer confidently after reviewing the model output.",
+      "heartRate": 78,
+      "clickEvent": "submitted-answer"
+    },
+    {
+      "id": 11,
+      "startTime": 95,
+      "endTime": 100,
+      "label": "frustrated",
+      "justification": "Second occurrence of the validation error, audible sigh detected.",
+      "heartRate": 88,
+      "clickEvent": "error-code-42"
+    },
+    {
+      "id": 12,
+      "startTime": 100,
+      "endTime": 110,
+      "label": "engaged",
+      "justification": "Read the feedback panel thoroughly and adjusted the hypothesis.",
+      "heartRate": 78,
+      "clickEvent": "read-feedback"
+    },
+    {
+      "id": 13,
+      "startTime": 110,
+      "endTime": 125,
+      "label": "confused",
+      "justification": "Opened the hint bank, posture leaned in, longer-than-usual dwell.",
+      "heartRate": 82,
+      "clickEvent": "opened-hints"
+    },
+    {
+      "id": 14,
+      "startTime": 125,
+      "endTime": 140,
+      "label": "engaged",
+      "justification": "Applied the hint and ran multiple iterations of the simulation.",
+      "heartRate": 79,
+      "clickEvent": null
+    },
+    {
+      "id": 15,
+      "startTime": 140,
+      "endTime": 150,
+      "label": "bored",
+      "justification": "Checked the clock repeatedly while waiting for a render.",
+      "heartRate": 70,
+      "clickEvent": "checked-clock"
+    },
+    {
+      "id": 16,
+      "startTime": 150,
+      "endTime": 160,
+      "label": "engaged",
+      "justification": "Paused the video to compare frames side by side with the graph.",
+      "heartRate": 80,
+      "clickEvent": "paused-video"
+    },
+    {
+      "id": 17,
+      "startTime": 160,
+      "endTime": 170,
+      "label": "frustrated",
+      "justification": "Deleted and retyped the answer block multiple times.",
+      "heartRate": 86,
+      "clickEvent": "deleted-text"
+    },
+    {
+      "id": 18,
+      "startTime": 170,
+      "endTime": 180,
+      "label": "engaged",
+      "justification": "Final answer submitted, calm completion, session closed cleanly.",
+      "heartRate": 78,
+      "clickEvent": "answered-question"
+    }
+  ]
+}
