@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { LABEL_KEYS, LABELS } from '../lib/labels'
+import { validateSession } from '../lib/validate'
 
 const SESSIONS = [
   { id: 1, title: 'Physics Simulation · Cohort A', status: 'reviewed', meta: '180s · 18 segments' },
@@ -19,6 +20,8 @@ export default function HomePage() {
   const navigate = useNavigate()
   const [processing, setProcessing] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [error, setError] = useState(null)
+  const fileInputRef = useRef(null)
   const proxy = useRef({ pct: 0 })
   const fillRef = useRef(null)
   const percentRef = useRef(null)
@@ -28,13 +31,14 @@ export default function HomePage() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
   )
 
-  const startProcessing = useCallback(() => {
+  const startProcessing = useCallback((session) => {
+    const go = () => navigate('/review', { state: session ? { session } : undefined })
     setProcessing(true)
     proxy.current.pct = 0
     if (fillRef.current) fillRef.current.style.width = '0%'
     if (percentRef.current) percentRef.current.textContent = '0%'
     if (isReduced.current) {
-      setTimeout(() => navigate('/review'), 400)
+      setTimeout(go, 400)
       return
     }
     tweenRef.current = gsap.to(proxy.current, {
@@ -45,7 +49,7 @@ export default function HomePage() {
         if (fillRef.current) fillRef.current.style.width = `${proxy.current.pct}%`
         if (percentRef.current) percentRef.current.textContent = `${Math.round(proxy.current.pct)}%`
       },
-      onComplete: () => navigate('/review'),
+      onComplete: go,
     })
   }, [navigate])
 
@@ -58,10 +62,29 @@ export default function HomePage() {
   const handleFile = useCallback((e) => {
     e.preventDefault()
     setDragOver(false)
+    setError(null)
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files
-    if (files && files.length > 0) {
-      startProcessing()
+    const file = files && files.length > 0 ? files[0] : null
+    if (!file) return
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    const reader = new FileReader()
+    reader.onerror = () => setError('Could not read that file. Please try another session file.')
+    reader.onload = () => {
+      let parsed
+      try {
+        parsed = JSON.parse(reader.result)
+      } catch {
+        setError('Could not read that file as JSON. Please drop a .json or .nxs session file.')
+        return
+      }
+      const result = validateSession(parsed)
+      if (!result.ok) {
+        setError(result.error)
+        return
+      }
+      startProcessing(result.data)
     }
+    reader.readAsText(file)
   }, [startProcessing])
 
   useEffect(() => {
@@ -150,14 +173,17 @@ export default function HomePage() {
         >
           <div>
             <div className="dropzone__title">Drop a session recording</div>
-            <div className="dropzone__hint">MP4, WebM, or .nxs fusion file · up to 5 min</div>
+            <div className="dropzone__hint">Session JSON · .json or .nxs</div>
           </div>
           <input
+            ref={fileInputRef}
             type="file"
-            accept=".mp4,.webm,.nxs"
+            accept=".json,.nxs,application/json"
             onChange={handleFile}
           />
         </div>
+
+        {error && <p className="home__error" role="alert">{error}</p>}
       </div>
 
       {processing && (
