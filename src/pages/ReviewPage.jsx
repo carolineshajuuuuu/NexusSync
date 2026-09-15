@@ -5,8 +5,6 @@ import { LABELS, LABEL_KEYS } from '../lib/labels'
 import { formatTime } from '../lib/format'
 import sessionData from '../data/session-data.json'
 
-const ACTION_MS = 1600
-
 function formatClick(click) {
   if (!click) return '—'
   return click.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -14,11 +12,15 @@ function formatClick(click) {
 
 export default function ReviewPage() {
   const location = useLocation()
-  const { sessionName, durationSeconds, segments } = location.state?.session || sessionData
+  const initialSession = location.state?.session || sessionData
+  const { sessionName, durationSeconds } = initialSession
+
+  const [segments, setSegments] = useState(() => initialSession.segments)
+  const [pendingCorrectId, setPendingCorrectId] = useState(null)
 
   const [selectedId, setSelectedId] = useState(() => {
-    const defaultSeg = segments.find(s => s.id === 4)
-    return defaultSeg ? defaultSeg.id : segments[0].id
+    const defaultSeg = initialSession.segments.find(s => s.id === 4)
+    return defaultSeg ? defaultSeg.id : initialSession.segments[0].id
   })
 
   const [acceptedIds, setAcceptedIds] = useState(new Set())
@@ -133,28 +135,66 @@ export default function ReviewPage() {
         next.add(id)
         return next
       })
-      setTimeout(() => {
-        setAcceptedIds(prev => {
-          const next = new Set(prev)
-          next.delete(id)
-          return next
-        })
-      }, ACTION_MS)
-    } else {
       setCorrectedIds(prev => {
         const next = new Set(prev)
-        next.add(id)
+        next.delete(id)
         return next
       })
-      setTimeout(() => {
-        setCorrectedIds(prev => {
-          const next = new Set(prev)
-          next.delete(id)
-          return next
-        })
-      }, ACTION_MS)
+      setPendingCorrectId(prev => (prev === id ? null : prev))
+    } else {
+      setPendingCorrectId(prev => (prev === id ? null : id))
     }
   }, [])
+
+  const handlePickLabel = useCallback((id, label) => {
+    setSegments(prev =>
+      prev.map(seg => (seg.id === id ? { ...seg, label } : seg))
+    )
+    setCorrectedIds(prev => {
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+    setAcceptedIds(prev => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+    setPendingCorrectId(null)
+  }, [])
+
+  const handleExport = useCallback(() => {
+    const payload = { sessionName, durationSeconds, segments }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const slug =
+      sessionName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 48) || 'review'
+    link.href = url
+    link.download = `session-${slug}.json`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }, [sessionName, durationSeconds, segments])
+
+  const { decidedCount, progressPct, isReviewComplete } = useMemo(() => {
+    const decided = acceptedIds.size + correctedIds.size
+    const pct = segments.length
+      ? Math.round((decided / segments.length) * 100)
+      : 0
+    return {
+      decidedCount: decided,
+      progressPct: pct,
+      isReviewComplete: pct === 100,
+    }
+  }, [acceptedIds, correctedIds, segments.length])
 
   const rulerTicks = useMemo(() => {
     const ticks = []
@@ -174,8 +214,26 @@ export default function ReviewPage() {
           <Link to="/" className="topbar__back">← Sessions</Link>
           <div className="topbar__title">{sessionName}</div>
         </div>
-        <div className="topbar__meta">
-          {segments.length} segments · {formatTime(durationSeconds)}
+        <div className="topbar__actions">
+          <div
+            className="review-progress"
+            title={`${decidedCount} of ${segments.length} segments decided`}
+          >
+            <div className="review-progress__track">
+              <div
+                className={`review-progress__fill${isReviewComplete ? ' review-progress__fill--complete' : ''}`}
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <span className="review-progress__label">
+              {isReviewComplete
+                ? 'Review complete'
+                : `${decidedCount}/${segments.length} reviewed`}
+            </span>
+          </div>
+          <button className="btn btn--ghost" onClick={handleExport}>
+            Export JSON
+          </button>
         </div>
       </header>
 
@@ -236,12 +294,32 @@ export default function ReviewPage() {
                 Accept
               </button>
               <button
-                className={`btn ${correctedIds.has(selected.id) ? 'btn--confirm' : 'btn--ghost'}`}
+                className={`btn ${correctedIds.has(selected.id) || pendingCorrectId === selected.id ? 'btn--confirm' : 'btn--ghost'}`}
                 onClick={() => handleConfirm(selected.id, 'correct')}
               >
                 Correct
               </button>
             </div>
+            {pendingCorrectId === selected.id && (
+              <div className="label-picker">
+                <div className="label-picker__label">Pick the true label</div>
+                <div className="label-picker__opts">
+                  {LABEL_KEYS.map(key => (
+                    <button
+                      key={key}
+                      className={`label-picker__opt${selected.label === key ? ' label-picker__opt--active' : ''}`}
+                      onClick={() => handlePickLabel(selected.id, key)}
+                    >
+                      <span
+                        className="label-picker__dot"
+                        style={{ background: LABELS[key].color }}
+                      />
+                      {LABELS[key].name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
         </div>
 
@@ -365,6 +443,12 @@ export default function ReviewPage() {
             >
               {LABELS[seg.label].name}
             </span>
+            {acceptedIds.has(seg.id) && (
+              <span className="seg-log__badge seg-log__badge--kept">kept</span>
+            )}
+            {correctedIds.has(seg.id) && (
+              <span className="seg-log__badge seg-log__badge--fixed">fixed</span>
+            )}
           </button>
         ))}
       </section>

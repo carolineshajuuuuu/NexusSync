@@ -552,6 +552,52 @@ p {
   white-space: nowrap;
 }
 
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.topbar .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.review-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.review-progress__track {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-warm);
+  overflow: hidden;
+}
+
+.review-progress__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--sage);
+  transition: width 0.2s ease;
+}
+
+.review-progress__fill--complete {
+  background: var(--sage-deep);
+}
+
+.review-progress__label {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--faint);
+}
+
 .review__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
@@ -833,6 +879,57 @@ p {
   flex: 1;
 }
 
+/* Label picker */
+.label-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label-picker__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.label-picker__opts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.label-picker__opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.label-picker__opt:hover {
+  border-color: var(--faint);
+}
+
+.label-picker__opt--active {
+  border-color: var(--text);
+}
+
+.label-picker__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
 /* Stats */
 .stats {
   display: grid;
@@ -941,6 +1038,25 @@ p {
   font-weight: 600;
 }
 
+.seg-log__badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.seg-log__badge--kept {
+  color: var(--sage-deep);
+  background: var(--sage-tint);
+}
+
+.seg-log__badge--fixed {
+  color: var(--clay-deep);
+  background: var(--clay-tint);
+}
+
 /* ============================================================
    Responsive
    ============================================================ */
@@ -977,6 +1093,14 @@ p {
 
   .review__grid {
     grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .review-progress {
+    min-width: 110px;
   }
 }
 
