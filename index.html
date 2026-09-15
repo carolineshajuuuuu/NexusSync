@@ -1,24 +1,863 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#FAFAF8" />
-    <meta
-      name="description"
-      content="NexusSync — fuse multimodal session data into one aligned timeline of learning states."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <title>NexusSync — Multimodal Session Fuser</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusSync — Multimodal Research Assistant</title>
+  <meta name="description" content="A calm, high-precision research assistant tool for syncing Video, Heart Rate, and Click Logs into AI learning-state timelines.">
+  
+  <!-- Fonts: Inter (Humanist Sans) + JetBrains Mono (Data/Monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-root">
+    
+    <!-- Top Global Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-group">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="mark-dot"></span>
+            <span class="mark-pulse"></span>
+          </div>
+          <div class="brand-meta">
+            <h1 class="brand-title">NexusSync</h1>
+            <span class="brand-badge">Research Assistant</span>
+          </div>
+        </div>
+        
+        <div class="header-divider" aria-hidden="true"></div>
+        
+        <div class="workspace-picker">
+          <span class="workspace-label">Study:</span>
+          <span class="workspace-value">Cognitive Load in Interactive Math · Dyad 14</span>
+        </div>
+      </div>
+
+      <!-- View Switcher -->
+      <nav class="view-nav" aria-label="Primary Navigation">
+        <button type="button" class="nav-tab active" id="tab-page1" data-page="page1" aria-selected="true" role="tab">
+          <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
+          <span>Page 1: Upload</span>
+          <kbd class="key-hint">1</kbd>
+        </button>
+        <button type="button" class="nav-tab" id="tab-page2" data-page="page2" aria-selected="false" role="tab">
+          <i class="ti ti-timeline-event-text nav-icon" aria-hidden="true"></i>
+          <span>Page 2: Timeline</span>
+          <kbd class="key-hint">2</kbd>
+          <span class="review-counter" id="unreviewed-badge">1 Flagged</span>
+        </button>
+      </nav>
+
+      <div class="header-right">
+        <div class="stream-status" id="stream-status-pill" title="Hardware clock drift < 0.4ms">
+          <span class="status-indicator"></span>
+          <span class="status-text mono" id="stream-status-text">3 STREAMS ALIGNED · 60 FPS</span>
+        </div>
+        
+        <button type="button" class="header-action-btn" id="btn-shortcuts" title="Keyboard Shortcuts (?)" aria-label="Shortcuts">
+          <i class="ti ti-keyboard" aria-hidden="true"></i>
+        </button>
+        
+        <div class="user-pill" title="Researcher Workspace">
+          <div class="avatar-circle">RA</div>
+          <span class="user-name">Researcher</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Viewport Area -->
+    <main class="app-main" id="main-content">
+      
+      <!-- ========================================================================= -->
+      <!-- PAGE 1: UPLOAD (Video + Heart Rate + Click Log Ingestion)                  -->
+      <!-- ========================================================================= -->
+      <section class="page-view active" id="view-page1" role="tabpanel" aria-labelledby="tab-page1">
+        
+        <div class="page1-grid">
+          
+          <!-- Left Sidebar: Session Archive List -->
+          <aside class="sessions-sidebar" aria-label="Session Archive">
+            <div class="sidebar-header">
+              <span class="section-label">Recorded Sessions</span>
+              <span class="count-pill mono" id="session-count">4</span>
+            </div>
+
+            <div class="sessions-list" role="listbox" id="sessions-list" aria-label="Session selector">
+              <!-- Session 1042 (Active) -->
+              <div class="session-card active" data-session-id="SES-1042" role="option" aria-selected="true" tabindex="0">
+                <div class="session-card-head">
+                  <span class="session-code mono">SES-1042</span>
+                  <span class="status-pill status-ready">Ready to Align</span>
+                </div>
+                <div class="session-card-name">Participant 28 · Algebra Task</div>
+                <div class="session-card-meta">
+                  <span class="meta-item mono">18:45</span>
+                  <span class="meta-sep">·</span>
+                  <span class="meta-item">Video + HR + Clicks</span>
+                </div>
+              </div>
+
+              <!-- Session 1041 -->
+              <div class="session-card" data-session-id="SES-1041" role="option" aria-selected="false" tabindex="0">
+                <div class="session-card-head">
+                  <span class="session-code mono">SES-1041</span>
+                  <span class="status-pill status-complete">Aligned</span>
+                </div>
+                <div class="session-card-name">Participant 27 · Geometry Proof</div>
+                <div class="session-card-meta">
+                  <span class="meta-item mono">24:10</span>
+                  <span class="meta-sep">·</span>
+                  <span class="meta-item">3 Streams</span>
+                </div>
+              </div>
+
+              <!-- Session 1040 -->
+              <div class="session-card" data-session-id="SES-1040" role="option" aria-selected="false" tabindex="0">
+                <div class="session-card-head">
+                  <span class="session-code mono">SES-1040</span>
+                  <span class="status-pill status-processing">Processing</span>
+                </div>
+                <div class="session-card-name">Participant 26 · Fractions Test</div>
+                <div class="session-card-meta">
+                  <span class="meta-item mono">15:20</span>
+                  <span class="meta-sep">·</span>
+                  <span class="meta-item">3 Streams</span>
+                </div>
+              </div>
+
+              <!-- Session 1039 -->
+              <div class="session-card" data-session-id="SES-1039" role="option" aria-selected="false" tabindex="0">
+                <div class="session-card-head">
+                  <span class="session-code mono">SES-1039</span>
+                  <span class="status-pill status-flagged">Flagged Impasse</span>
+                </div>
+                <div class="session-card-name">Participant 25 · Word Problems</div>
+                <div class="session-card-meta">
+                  <span class="meta-item mono">21:05</span>
+                  <span class="meta-sep">·</span>
+                  <span class="meta-item">3 Streams</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebar-footer">
+              <button type="button" class="btn-ghost-sm" id="btn-load-sample">
+                <i class="ti ti-wand" aria-hidden="true"></i>
+                <span>Load Sample Tri-Stream Bundle</span>
+              </button>
+            </div>
+          </aside>
+
+          <!-- Main Ingestion Panel -->
+          <div class="main-upload-panel">
+            
+            <div class="panel-intro">
+              <div class="intro-headline-group">
+                <h2 class="panel-headline">Multimodal Ingestion & Alignment Pipeline</h2>
+                <span class="workflow-badge mono">WORKFLOW: 3 STREAMS → BACKEND AI → TIMELINE</span>
+              </div>
+              <p class="panel-subhead">
+                Upload your raw session recordings. The backend AI cross-correlates timestamps across Video, Heart Rate, and Click Logs to generate synchronized learning-state timelines (Engagement, Confusion, Boredom, Frustration).
+              </p>
+            </div>
+
+            <!-- Rubric Construct Chips Section -->
+            <div class="card-module rubric-module">
+              <div class="module-header">
+                <div class="module-title-group">
+                  <span class="section-label">Construct Taxonomy</span>
+                  <span class="module-note">Target learning states detected by AI model</span>
+                </div>
+                <button type="button" class="btn-text-sm" id="btn-add-rubric">
+                  <i class="ti ti-plus" aria-hidden="true"></i>
+                  <span>Add Custom Construct</span>
+                </button>
+              </div>
+
+              <div class="rubric-chips-container" id="rubric-chips-list">
+                <!-- Chip 1: Engagement -->
+                <div class="rubric-chip" data-construct="engagement">
+                  <span class="chip-dot dot-engagement"></span>
+                  <span class="chip-name">Engagement</span>
+                  <span class="chip-code mono">ENG</span>
+                  <button type="button" class="chip-remove-btn" title="Remove construct" aria-label="Remove construct">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                  </button>
+                </div>
+
+                <!-- Chip 2: Confusion -->
+                <div class="rubric-chip" data-construct="confusion">
+                  <span class="chip-dot dot-confusion"></span>
+                  <span class="chip-name">Confusion</span>
+                  <span class="chip-code mono">CNF</span>
+                  <button type="button" class="chip-remove-btn" title="Remove construct" aria-label="Remove construct">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                  </button>
+                </div>
+
+                <!-- Chip 3: Boredom -->
+                <div class="rubric-chip" data-construct="boredom">
+                  <span class="chip-dot dot-boredom"></span>
+                  <span class="chip-name">Boredom</span>
+                  <span class="chip-code mono">BOR</span>
+                  <button type="button" class="chip-remove-btn" title="Remove construct" aria-label="Remove construct">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                  </button>
+                </div>
+
+                <!-- Chip 4: Frustration -->
+                <div class="rubric-chip" data-construct="frustration">
+                  <span class="chip-dot dot-frustration"></span>
+                  <span class="chip-name">Frustration</span>
+                  <span class="chip-code mono">FRS</span>
+                  <button type="button" class="chip-remove-btn" title="Remove construct" aria-label="Remove construct">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- THREE DEDICATED STREAM DROP SLOTS (Video + Heart Rate + Click Log) -->
+            <div class="stream-slots-container">
+              <div class="slots-header">
+                <span class="section-label">Required Multimodal Data Streams</span>
+                <span class="slots-subtext mono">3 / 3 STREAMS CONNECTED</span>
+              </div>
+
+              <div class="stream-slots-grid">
+                
+                <!-- SLOT 1: VIDEO -->
+                <div class="stream-slot-card active" id="slot-video" tabindex="0" role="button" aria-label="Upload Video Stream">
+                  <input type="file" id="input-video" accept="video/mp4,video/mkv,video/webm" style="display:none;" />
+                  <div class="slot-icon-wrap icon-video">
+                    <i class="ti ti-video" aria-hidden="true"></i>
+                  </div>
+                  <div class="slot-info">
+                    <div class="slot-type-row">
+                      <span class="slot-type-name">1. Video Recording</span>
+                      <span class="slot-status-tag mono">READY</span>
+                    </div>
+                    <div class="slot-file-name mono" id="file-name-video">p28_facial_screen_1080p60.mp4</div>
+                    <div class="slot-meta mono">1080p60 · 18m 45s · 1.42 GB</div>
+                  </div>
+                  <div class="slot-check-badge">✓</div>
+                </div>
+
+                <!-- SLOT 2: HEART RATE -->
+                <div class="stream-slot-card active" id="slot-heartrate" tabindex="0" role="button" aria-label="Upload Heart Rate Log">
+                  <input type="file" id="input-heartrate" accept=".csv,.txt,.json" style="display:none;" />
+                  <div class="slot-icon-wrap icon-heartrate">
+                    <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>
+                  </div>
+                  <div class="slot-info">
+                    <div class="slot-type-row">
+                      <span class="slot-type-name">2. Heart Rate Stream</span>
+                      <span class="slot-status-tag mono">READY</span>
+                    </div>
+                    <div class="slot-file-name mono" id="file-name-hr">polar_h10_ecg_hrv_stream.csv</div>
+                    <div class="slot-meta mono">100Hz ECG · 112,500 samples · 8.4 MB</div>
+                  </div>
+                  <div class="slot-check-badge">✓</div>
+                </div>
+
+                <!-- SLOT 3: CLICK LOG -->
+                <div class="stream-slot-card active" id="slot-clicklog" tabindex="0" role="button" aria-label="Upload Click Log">
+                  <input type="file" id="input-clicklog" accept=".json,.csv,.log" style="display:none;" />
+                  <div class="slot-icon-wrap icon-clicklog">
+                    <i class="ti ti-cursor-text" aria-hidden="true"></i>
+                  </div>
+                  <div class="slot-info">
+                    <div class="slot-type-row">
+                      <span class="slot-type-name">3. Interaction Click Log</span>
+                      <span class="slot-status-tag mono">READY</span>
+                    </div>
+                    <div class="slot-file-name mono" id="file-name-clicks">lms_interaction_telemetry.json</div>
+                    <div class="slot-meta mono">342 clicks · 28 hint calls · 1.2 MB</div>
+                  </div>
+                  <div class="slot-check-badge">✓</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Alignment Pipeline Progress Card (Shows during execution) -->
+            <div class="card-module pipeline-stepper-card" id="pipeline-stepper" style="display: none;">
+              <div class="pipeline-header">
+                <span class="section-label">Backend AI Processing</span>
+                <span class="pipeline-status-text mono" id="pipeline-step-text">Aligning Timestamps...</span>
+              </div>
+              <div class="pipeline-steps-bar">
+                <div class="p-step active" id="step-1">
+                  <span class="step-num mono">1</span>
+                  <span class="step-title">Ingest Streams</span>
+                </div>
+                <div class="p-step-connector"></div>
+                <div class="p-step" id="step-2">
+                  <span class="step-num mono">2</span>
+                  <span class="step-title">Timestamp Alignment</span>
+                </div>
+                <div class="p-step-connector"></div>
+                <div class="p-step" id="step-3">
+                  <span class="step-num mono">3</span>
+                  <span class="step-title">Synchronized Fusion</span>
+                </div>
+                <div class="p-step-connector"></div>
+                <div class="p-step" id="step-4">
+                  <span class="step-num mono">4</span>
+                  <span class="step-title">AI Construct Timeline</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Row / Primary CTA -->
+            <div class="upload-action-row">
+              <div class="action-meta-info">
+                <span class="meta-label">Alignment Target:</span>
+                <span class="meta-val mono">SES-1042 · Video + Heart Rate + Click Log (18m 45s)</span>
+              </div>
+              
+              <button type="button" class="btn-primary-accent" id="btn-run-analysis">
+                <i class="ti ti-cpu" aria-hidden="true"></i>
+                <span>Run Backend AI Alignment & Generate Timeline</span>
+                <i class="ti ti-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- PAGE 2: TIMELINE (Engagement / Confusion / Boredom / Frustration)         -->
+      <!-- ========================================================================= -->
+      <section class="page-view" id="view-page2" role="tabpanel" aria-labelledby="tab-page2">
+        <div class="page2-layout">
+          
+          <!-- Session Context Header -->
+          <div class="review-subhead-bar">
+            <div class="subhead-left">
+              <span class="session-badge mono">SES-1042</span>
+              <h2 class="subhead-title">Participant 28 · Algebra Task Review</h2>
+              <span class="subhead-time mono">[00:00.000 — 18:45.000]</span>
+              <span class="sync-status-badge mono">✓ 3 STREAMS SYNCED</span>
+            </div>
+
+            <div class="subhead-right">
+              <div class="verification-progress">
+                <span class="progress-label">Validation:</span>
+                <span class="progress-val mono" id="validation-progress-text">6 / 7 Segments Confirmed</span>
+              </div>
+              <button type="button" class="btn-ghost-sm" id="btn-export-annotations">
+                <i class="ti ti-download" aria-hidden="true"></i>
+                <span>Export Dataset (.json/.csv)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FULL-WIDTH MULTIMODAL TIMELINE STRIP -->
+          <div class="card-module timeline-module" aria-label="Interactive Multimodal Timeline">
+            
+            <div class="timeline-meta-header">
+              <div class="timeline-title-group">
+                <span class="section-label">Synchronized Multimodal Timeline</span>
+                <span class="timeline-cursor-readout mono" id="cursor-timestamp">Scrub: 04:18.240</span>
+              </div>
+              <div class="timeline-legend">
+                <span class="legend-item">
+                  <span class="legend-box box-engagement"></span>
+                  <span>Engagement</span>
+                </span>
+                <span class="legend-item">
+                  <span class="legend-box box-confusion"></span>
+                  <span>Confusion</span>
+                </span>
+                <span class="legend-item">
+                  <span class="legend-box box-boredom"></span>
+                  <span>Boredom</span>
+                </span>
+                <span class="legend-item">
+                  <span class="legend-box box-frustration"></span>
+                  <span>Frustration</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Interactive Timeline Canvas Container -->
+            <div class="timeline-strip-container" id="timeline-track" tabindex="0" role="slider" aria-label="Time scrubber" aria-valuemin="0" aria-valuemax="1125" aria-valuenow="258">
+              
+              <!-- Time Ruler ticks -->
+              <div class="timeline-ruler">
+                <span class="ruler-tick mono" style="left: 0%;">00:00</span>
+                <span class="ruler-tick mono" style="left: 13.33%;">02:30</span>
+                <span class="ruler-tick mono" style="left: 26.66%;">05:00</span>
+                <span class="ruler-tick mono" style="left: 40.00%;">07:30</span>
+                <span class="ruler-tick mono" style="left: 53.33%;">10:00</span>
+                <span class="ruler-tick mono" style="left: 66.66%;">12:30</span>
+                <span class="ruler-tick mono" style="left: 80.00%;">15:00</span>
+                <span class="ruler-tick mono" style="left: 93.33%;">17:30</span>
+                <span class="ruler-tick mono" style="left: 100%; transform: translateX(-100%);">18:45</span>
+              </div>
+
+              <!-- Main State Segments Track (Engagement / Confusion / Boredom / Frustration) -->
+              <div class="segments-track" id="segments-track">
+                <!-- Segments generated dynamically by app.js -->
+                
+                <!-- Scrub Playhead Needle -->
+                <div class="scrub-playhead" id="playhead" style="left: 22.95%;">
+                  <div class="playhead-handle"></div>
+                  <div class="playhead-line"></div>
+                </div>
+              </div>
+
+              <!-- MULTIMODAL SYNCHRONIZED SUB-TRACKS: Heart Rate & Click Logs -->
+              <div class="sub-waveforms" id="sub-waveforms">
+                
+                <!-- TRACK 1: HEART RATE (ECG / BPM) -->
+                <div class="waveform-row hr-row" title="Heart Rate Stream (BPM / Inter-beat Interval)">
+                  <div class="track-header-cell">
+                    <i class="ti ti-heart-rate-monitor track-icon" aria-hidden="true"></i>
+                    <span class="signal-tag mono">HR</span>
+                  </div>
+                  <div class="signal-svg-wrap">
+                    <svg class="signal-svg" preserveAspectRatio="none" viewBox="0 0 1000 24">
+                      <!-- Dynamic ECG & Heart Rate Flux -->
+                      <path d="M0,14 Q50,14 100,13 T195,14 L205,4 L212,22 L220,10 L228,14 Q280,18 340,19 T450,14 T610,8 L618,3 L625,23 L633,9 L640,14 Q700,7 715,6 T880,17 L888,2 L895,22 L903,9 L910,15 T1000,14" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.8"/>
+                    </svg>
+                  </div>
+                  <span class="live-stream-metric mono" id="live-hr-readout">84 bpm</span>
+                </div>
+
+                <!-- TRACK 2: CLICK LOG & INTERACTION EVENTS -->
+                <div class="waveform-row clicks-row" title="Click Log Interactions (Mouse clicks, Hint requests, Step submissions)">
+                  <div class="track-header-cell">
+                    <i class="ti ti-cursor-text track-icon" aria-hidden="true"></i>
+                    <span class="signal-tag mono">CLICKS</span>
+                  </div>
+                  <div class="clicks-markers-track" id="clicks-markers-track">
+                    <!-- Click event tick dots rendered dynamically -->
+                  </div>
+                  <span class="live-stream-metric mono" id="live-click-readout">Click: Step 2</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SPLIT VIEW: Video Player (Left ~60%) + Detail Panel (Right ~40%) -->
+          <div class="review-split-grid">
+            
+            <!-- LEFT ~60%: Synchronized Video & Session Player -->
+            <div class="card-module video-module">
+              
+              <div class="video-display-area" id="video-stage">
+                <!-- Research Student Session Canvas -->
+                <div class="video-viewport">
+                  
+                  <div class="lab-feed-split">
+                    <!-- Participant Video Frame -->
+                    <div class="feed-half feed-p1">
+                      <div class="feed-participant-tag">
+                        <span class="tag-id mono">Student P28 (Webcam)</span>
+                        <span class="tag-gaze mono" id="hud-gaze-state">GAZE: PROOF STEP 3</span>
+                      </div>
+                      
+                      <!-- Facial Feature Tracking Overlay (FACS Box) -->
+                      <div class="facs-overlay facs-impasse" id="facs-p1">
+                        <div class="facs-box"></div>
+                        <span class="facs-badge mono" id="hud-facs-badge">AU04 [0.88] BROW</span>
+                      </div>
+                      
+                      <div class="avatar-placeholder p1-silhouette">
+                        <svg viewBox="0 0 120 120" class="research-avatar-svg">
+                          <circle cx="60" cy="45" r="28" fill="#D6D6CC"/>
+                          <path d="M20,110 C20,80 40,75 60,75 C80,75 100,80 100,110 Z" fill="#D6D6CC"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- Screen Workspace & Click Telemetry Feed -->
+                    <div class="feed-half feed-screen">
+                      <div class="feed-participant-tag">
+                        <span class="tag-id mono">Screen Workspace</span>
+                        <span class="tag-gaze mono" id="hud-click-state">LAST CLICK: HINT BUTTON</span>
+                      </div>
+
+                      <div class="screen-math-mockup">
+                        <div class="math-problem-box">
+                          <span class="math-line mono">Solve for x:</span>
+                          <span class="math-equation mono">3x² - 12x + 9 = 0</span>
+                          <div class="math-step-active mono" id="screen-current-step">Step 2: Factorizing (3x - 3)(x - 3) = 0</div>
+                        </div>
+                      </div>
+
+                      <!-- Simulated Cursor & Click Ripple -->
+                      <div class="simulated-cursor" id="sim-cursor" style="top: 56%; left: 48%;">
+                        <div class="cursor-pointer"></div>
+                        <div class="click-ripple" id="click-ripple"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Overlay Mode Switcher Pills -->
+                  <div class="video-overlay-controls">
+                    <button type="button" class="overlay-toggle active" data-overlay="facs">FACS Facial Mesh</button>
+                    <button type="button" class="overlay-toggle active" data-overlay="clicks">Click Heatmap</button>
+                    <button type="button" class="overlay-toggle active" data-overlay="hrv">ECG Overlay</button>
+                  </div>
+
+                  <!-- Timecode Overlay HUD -->
+                  <div class="video-hud-timecode mono" id="hud-timecode">
+                    04:18.240 <span class="fps-tag">60.0 fps</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Video Transport Bar -->
+              <div class="video-transport-bar">
+                <div class="transport-controls">
+                  
+                  <button type="button" class="transport-btn" id="btn-step-backward" title="Step Back 50ms (←)" aria-label="Step Back">
+                    <i class="ti ti-player-skip-back" aria-hidden="true"></i>
+                  </button>
+                  
+                  <button type="button" class="transport-btn btn-play-main" id="btn-play-pause" title="Play / Pause (Space)" aria-label="Play">
+                    <i class="ti ti-player-play" id="play-icon" aria-hidden="true"></i>
+                  </button>
+                  
+                  <button type="button" class="transport-btn" id="btn-step-forward" title="Step Forward 50ms (→)" aria-label="Step Forward">
+                    <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
+                  </button>
+
+                  <div class="timecode-display mono">
+                    <span id="current-timecode">04:18.240</span>
+                    <span class="time-sep">/</span>
+                    <span id="total-timecode">18:45.000</span>
+                  </div>
+                </div>
+
+                <div class="transport-settings">
+                  <!-- Speed Selector -->
+                  <div class="speed-selector">
+                    <button type="button" class="speed-btn" data-speed="0.5">0.5×</button>
+                    <button type="button" class="speed-btn active" data-speed="1.0">1.0×</button>
+                    <button type="button" class="speed-btn" data-speed="2.0">2.0×</button>
+                  </div>
+
+                  <button type="button" class="transport-btn" id="btn-loop-segment" title="Loop active segment (L)" aria-label="Loop Segment">
+                    <i class="ti ti-repeat" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT ~40%: Detail & Validation Panel -->
+            <div class="card-module detail-module">
+              
+              <div class="detail-header">
+                <div class="detail-segment-id">
+                  <span class="segment-code mono" id="detail-seg-code">SEG-002</span>
+                  <span class="segment-interval mono" id="detail-seg-interval">03:15.000 — 05:40.000 (2m 25s)</span>
+                </div>
+                <div class="detail-status-pill status-flagged" id="detail-status-pill">
+                  Under Review
+                </div>
+              </div>
+
+              <!-- AI Inferred Construct Block (Engagement, Confusion, Boredom, Frustration) -->
+              <div class="construct-classification-block">
+                <span class="section-label">AI Inferred State</span>
+                <div class="construct-name-row">
+                  <h3 class="construct-headline" id="detail-construct-name">Frustration</h3>
+                  <span class="confidence-pill mono" id="detail-confidence">p = 0.91</span>
+                </div>
+              </div>
+
+              <!-- One-line AI Justification connecting the 3 streams -->
+              <div class="justification-block">
+                <span class="section-label">Multimodal Evidence Justification</span>
+                <p class="justification-text" id="detail-justification">
+                  Heart rate spike (92 bpm, Δ+18 bpm) following 3 consecutive error clicks on factorization and sustained eyebrow furrow (AU04 >3.2s).
+                </p>
+              </div>
+
+              <!-- Monospace Raw Signal Readout across Video, Heart Rate, and Click Log -->
+              <div class="signals-readout-block">
+                <div class="signals-header">
+                  <span class="section-label">Raw Multimodal Signal Readout</span>
+                  <span class="sync-badge mono">3-STREAM ALIGNED</span>
+                </div>
+                
+                <div class="signal-metrics-table">
+                  
+                  <div class="metric-row">
+                    <span class="metric-key mono">1. HEART RATE (BPM)</span>
+                    <span class="metric-val mono" id="metric-hr">92.4 bpm <span class="delta-up">[↑18.4% vs baseline]</span></span>
+                  </div>
+
+                  <div class="metric-row">
+                    <span class="metric-key mono">2. HEART RATE HRV (RMSSD)</span>
+                    <span class="metric-val mono" id="metric-hrv">28.4 ms <span class="delta-down">[High Sympathetic Load]</span></span>
+                  </div>
+
+                  <div class="metric-row">
+                    <span class="metric-key mono">3. CLICK FREQUENCY</span>
+                    <span class="metric-val mono" id="metric-clicks">3 clicks in 4s <span class="delta-up">[Erratic error pattern]</span></span>
+                  </div>
+
+                  <div class="metric-row">
+                    <span class="metric-key mono">4. LAST CLICK EVENT</span>
+                    <span class="metric-val mono" id="metric-lastclick">btn_undo_step (04:16.820)</span>
+                  </div>
+
+                  <div class="metric-row">
+                    <span class="metric-key mono">5. VIDEO FACS AU</span>
+                    <span class="metric-val mono" id="metric-facs">AU04 Brow (88%), AU14 (62%)</span>
+                  </div>
+
+                  <div class="metric-row">
+                    <span class="metric-key mono">6. GAZE FIXATION</span>
+                    <span class="metric-val mono" id="metric-gaze">Equation Box [Dwell 8.4s]</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Researcher Annotation Notes -->
+              <div class="researcher-note-block">
+                <label for="researcher-notes" class="section-label">Researcher Validation Note</label>
+                <textarea id="researcher-notes" class="notes-input" rows="2" placeholder="Add specific qualitative nuance or rationale..."></textarea>
+              </div>
+
+              <!-- Accept / Correct Controls -->
+              <div class="validation-controls-row">
+                <button type="button" class="btn-correct" id="btn-correct-label">
+                  <i class="ti ti-edit" aria-hidden="true"></i>
+                  <span>Correct Construct <kbd class="key-hint">C</kbd></span>
+                </button>
+                
+                <button type="button" class="btn-accept" id="btn-accept-label">
+                  <i class="ti ti-check" aria-hidden="true"></i>
+                  <span>Accept Label <kbd class="key-hint">A</kbd></span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BOTTOM ROW: 3 Small Stat Cards -->
+          <div class="review-stats-grid">
+            
+            <!-- Stat Card 1: 4 States Distribution -->
+            <div class="card-module stat-card">
+              <div class="stat-card-header">
+                <span class="section-label">State Distribution</span>
+                <span class="stat-aux mono">7 Segments</span>
+              </div>
+              <div class="stat-distribution-bar">
+                <div class="dist-seg dist-engagement" style="width: 56.0%;" title="Engagement: 56.0%"></div>
+                <div class="dist-seg dist-confusion" style="width: 14.7%;" title="Confusion: 14.7%"></div>
+                <div class="dist-seg dist-boredom" style="width: 9.3%;" title="Boredom: 9.3%"></div>
+                <div class="dist-seg dist-frustration" style="width: 20.0%;" title="Frustration: 20.0%"></div>
+              </div>
+              <div class="stat-dist-legend">
+                <span class="dist-item mono"><span class="dist-dot dot-engagement"></span> 56% Eng</span>
+                <span class="dist-item mono"><span class="dist-dot dot-confusion"></span> 15% Cnf</span>
+                <span class="dist-item mono"><span class="dist-dot dot-boredom"></span> 9% Bor</span>
+                <span class="dist-item mono"><span class="dist-dot dot-frustration"></span> 20% Frs</span>
+              </div>
+            </div>
+
+            <!-- Stat Card 2: Alignment Sync & Inter-Rater Reliability -->
+            <div class="card-module stat-card">
+              <div class="stat-card-header">
+                <span class="section-label">Tri-Stream Sync Fidelity</span>
+                <span class="stat-aux mono">LSL Alignment</span>
+              </div>
+              <div class="stat-number-row">
+                <span class="stat-big-num mono">Δt &lt; 0.4ms</span>
+                <span class="stat-subtext">Zero clock drift across Video (60Hz), HR (100Hz), and Click telemetry</span>
+              </div>
+            </div>
+
+            <!-- Stat Card 3: AI Inference Accuracy -->
+            <div class="card-module stat-card">
+              <div class="stat-card-header">
+                <span class="section-label">AI / Human Agreement</span>
+                <span class="stat-aux mono">Cohen's κ</span>
+              </div>
+              <div class="stat-number-row">
+                <span class="stat-big-num mono">κ = 0.88</span>
+                <span class="stat-subtext">High inter-rater concordance across Engagement / Confusion / Boredom / Frustration</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal: Rubric Construct Creator / Editor -->
+    <dialog class="modal-dialog" id="modal-rubric" aria-labelledby="modal-rubric-title">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modal-rubric-title">Add Custom Learning Construct</h3>
+          <button type="button" class="btn-close" id="btn-close-rubric-modal" aria-label="Close dialog">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        
+        <form id="form-rubric" class="modal-body">
+          <div class="form-group">
+            <label for="rubric-name" class="form-label">Construct Name</label>
+            <input type="text" id="rubric-name" class="form-input" placeholder="e.g., Mind Wandering / Off-Task" required />
+          </div>
+
+          <div class="form-group">
+            <label for="rubric-code" class="form-label">Code Identifier (Monospace)</label>
+            <input type="text" id="rubric-code" class="form-input mono" placeholder="e.g., OFF-05" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">State Color Family</label>
+            <div class="color-options-row">
+              <label class="color-radio">
+                <input type="radio" name="state-family" value="engagement" checked />
+                <span class="color-swatch swatch-engagement"></span>
+                <span>Sage-Teal (Engagement)</span>
+              </label>
+              <label class="color-radio">
+                <input type="radio" name="state-family" value="confusion" />
+                <span class="color-swatch swatch-confusion"></span>
+                <span>Muted Amber (Confusion)</span>
+              </label>
+              <label class="color-radio">
+                <input type="radio" name="state-family" value="boredom" />
+                <span class="color-swatch swatch-boredom"></span>
+                <span>Muted Slate (Boredom)</span>
+              </label>
+              <label class="color-radio">
+                <input type="radio" name="state-family" value="frustration" />
+                <span class="color-swatch swatch-frustration"></span>
+                <span>Soft Clay (Frustration)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="rubric-criteria" class="form-label">Multimodal Detection Thresholds</label>
+            <textarea id="rubric-criteria" class="form-input" rows="3" placeholder="Define triggers (e.g. Heart rate drop > 10bpm and zero click activity for 30s)..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost-sm" id="btn-cancel-rubric">Cancel</button>
+            <button type="submit" class="btn-primary-accent">Save Construct</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Modal: Reclassify / Correct Segment Modal -->
+    <dialog class="modal-dialog" id="modal-correct" aria-labelledby="modal-correct-title">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modal-correct-title">Reclassify Learning State</h3>
+          <button type="button" class="btn-close" id="btn-close-correct-modal" aria-label="Close dialog">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <p class="modal-desc">
+            Select the ground-truth construct for segment <strong class="mono" id="modal-seg-name">SEG-002</strong> (03:15 — 05:40).
+          </p>
+
+          <div class="reclassify-options-list" id="reclassify-options">
+            <!-- Options dynamically loaded from Rubric (Engagement / Confusion / Boredom / Frustration) -->
+          </div>
+
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="correction-rationale" class="form-label">Correction Rationale (Optional)</label>
+            <textarea id="correction-rationale" class="form-input" rows="2" placeholder="e.g. Heart rate spike was artifact from posture shift; clicks show deliberate exploration..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost-sm" id="btn-cancel-correct">Cancel</button>
+            <button type="button" class="btn-primary-accent" id="btn-save-correction">Apply Correction</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Modal: Keyboard Shortcuts Cheat Sheet -->
+    <dialog class="modal-dialog" id="modal-shortcuts" aria-labelledby="modal-shortcuts-title">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modal-shortcuts-title">Research Assistant Shortcuts</h3>
+          <button type="button" class="btn-close" id="btn-close-shortcuts-modal" aria-label="Close dialog">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="shortcuts-table">
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Switch to Page 1: Upload</span>
+              <kbd class="key-hint">1</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Switch to Page 2: Timeline</span>
+              <kbd class="key-hint">2</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Play / Pause Synchronized Video</span>
+              <kbd class="key-hint">Space</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Step Frame ±50ms</span>
+              <kbd class="key-hint">← / →</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Accept AI Segment Construct</span>
+              <kbd class="key-hint">A</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Open Reclassify / Correct Modal</span>
+              <kbd class="key-hint">C</kbd>
+            </div>
+            <div class="shortcut-row">
+              <span class="shortcut-desc">Loop Active Segment</span>
+              <kbd class="key-hint">L</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Custom Teal Dot Cursor -->
+    <div class="custom-cursor" id="custom-cursor" aria-hidden="true">
+      <div class="cursor-dot"></div>
+      <div class="cursor-ring"></div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
